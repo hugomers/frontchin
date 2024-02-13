@@ -3,8 +3,8 @@
     <q-form class="q-gutter-md">
       <div class="row">
         <div class="col flex justify-center">
-          <q-uploader :hide-upload-btn="true" ref="uploaderRef" :url="getUrl" color="primary" :style="sizes"
-            label="Inserte Imagen" @added="insertimage">
+          <q-uploader ref="uploaderRef" :url="getUrl" color="primary" :style="sizes" label="Inserte Imagen"
+            @added="insertimage">
           </q-uploader>
         </div>
 
@@ -169,7 +169,9 @@ const getUrl = (files) => {
 
   formData.append('__key', articule.value.code + '.jpg');
 
-  axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
+  console.log(formData);
+
+  axios.post('http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile', formData)
     .then(response => {
       console.log('Archivos subidos exitosamente:', response.data);
       uploaderRef.value.reset();
@@ -178,12 +180,11 @@ const getUrl = (files) => {
       console.error('Error al subir archivos:', error);
     });
 
-  return 'http://192.168.10.112:1920/appchin/public/api/addFile';
+  return 'http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile';
 }
 
 const uploadFile = () => {
   uploaderRef.value.upload();
-  console.log(uploaderRef.value)
 }
 
 const init = async () => {
