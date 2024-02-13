@@ -3,8 +3,8 @@
     <q-form class="q-gutter-md">
       <div class="row">
         <div class="col flex justify-center">
-          <q-uploader ref="uploaderRef" :url="getUrl" color="primary" :style="sizes" label="Inserte Imagen"
-            @added="insertimage">
+          <q-uploader :hide-upload-btn="true" ref="uploaderRef" :url="getUrl" color="primary" :style="sizes"
+            label="Inserte Imagen" @added="insertimage">
           </q-uploader>
         </div>
 
