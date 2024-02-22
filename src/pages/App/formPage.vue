@@ -174,9 +174,19 @@ const getUrl = (files) => {
     .then(response => {
       console.log('Archivos subidos exitosamente:', response.data);
       uploaderRef.value.reset();
+      $q.notify({
+        type: 'positive',
+        message: 'Imagen Producto se subio con exito :' + response.data,
+        position: 'center'
+      })
     })
     .catch(error => {
       console.error('Error al subir archivos:', error);
+      $q.notify({
+        type: 'negative',
+        message: '(I)Error al subir archivo:' + response.data,
+        position: 'center'
+      })
     });
 
   return 'http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile';
@@ -198,9 +208,19 @@ const getUrlprov = (files) => {
     .then(response => {
       console.log('Archivos subidos exitosamente:', response.data);
       uploaderRefprov.value.reset();
+      $q.notify({
+        type: 'positive',
+        message: 'Imagen Proveedor se subio con exito :' + response.data,
+        position: 'center'
+      })
     })
     .catch(error => {
       console.error('Error al subir archivos:', error);
+      $q.notify({
+        type: 'negative',
+        message: '(P)Error al subir archivo:' + response.data,
+        position: 'center'
+      })
     });
 
 
@@ -231,13 +251,16 @@ const init = async () => {
       articule.value.tpcusd = r.data.expenses.find(e => e.id === 3)._value;
       articule.value.tpcrmb = r.data.expenses.find(e => e.id === 4)._value;
       $q.loading.hide()
+
     })
     .catch(r => {
       console.error(r)
+
     })
 }
 
 const envform = async () => {
+  $q.loading.show({ message: "Subiendo Info" })
   let data = {
     code: articule.value.code,
     picture: articule.value.picture != null ? '/' + articule.value.code + '.jpg' : null,
@@ -262,9 +285,22 @@ const envform = async () => {
       articule.value.yuanes = 0;
       articule.value.pxc = 0;
       articule.value.qubic = 0;
+      $q.loading.hide();
+      $q.notify({
+        type: 'positive',
+        message: 'Formulario Enviado',
+        position: 'center'
+      })
+
     })
     .catch(r => {
       console.error(r)
+      $q.loading.hide()
+      $q.notify({
+        type: 'negative',
+        message: 'Hubo Algun problema',
+        position: 'center'
+      })
     })
 
 }
