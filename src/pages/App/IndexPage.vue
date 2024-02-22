@@ -30,7 +30,11 @@
             <div class="text-pre-wrap">{{ props.row.pieces }} Pzs</div>
           </q-td>
           <q-td key="Provider" :props="props">
-            <div class="text-pre-wrap">{{ props.row.provider }}</div>
+            <!-- <div class="text-pre-wrap">{{ props.row.provider }}</div> -->
+            <q-img v-if="props.row.provider != null"
+              :src="`http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/storage/app${props.row.provider}`"
+              :ratio="1" spinner-color="primary" spinner-size="50px" style="width: 100px" />
+            <q-avatar v-else rounded size="100px" font-size="52px" color="teal" text-color="white" icon="inventory_2" />
           </q-td>
           <q-td key="Costchin" :props="props">
             <div class="text-pre-wrap"> ¥ {{ props.row.chinesse_cost }}</div>

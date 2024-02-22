@@ -4,7 +4,12 @@
       <div class="row">
         <div class="col flex justify-center">
           <q-uploader :hide-upload-btn="true" ref="uploaderRef" :url="getUrl" color="primary" :style="sizes"
-            label="Inserte Imagen" @added="insertimage">
+            label="Imagen Articulo" @added="insertimage">
+          </q-uploader>
+        </div>
+        <div class="col flex justify-center">
+          <q-uploader :hide-upload-btn="true" ref="uploaderRefprov" :url="getUrlprov" color="primary" :style="sizes"
+            label="Imagen Proveedor" @added="insertprovider">
           </q-uploader>
         </div>
 
@@ -16,8 +21,8 @@
                 articule.code.toUpperCase() }}</div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Descripcion : {{
                 articule.description.toUpperCase() }}</div>
-              <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Proveedor : {{
-                articule.provider }}</div>
+              <!-- <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Proveedor : {{
+                articule.provider }}</div> -->
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Costo Chino : $ {{
                 costchin }}</div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Costo Mexicano : $ {{ costmex
@@ -36,15 +41,14 @@
 
       <div class="flex justify-center">
         <q-input filled v-model="articule.code" type="text" label="Codigo" :style="sizesinp"
-          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" :error="validart"
-          error-message="El articulo ya existe con el proveedor" />
+          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
 
         <q-input filled v-model="articule.description" type="text" label="Descripcion" :style="sizesinp"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
 
-        <q-select filled v-model="articule.provider" use-input use-chips miltiple input-debounce="0"
+        <!-- <q-select filled v-model="articule.provider" use-input use-chips miltiple input-debounce="0"
           @new-value="createValue" :options="provfil" @filter="filterFn" :style="sizesinp"
-          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" label="Proveedor/Fabricante" />
+          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" label="Proveedor/Fabricante" /> -->
 
         <q-input filled v-model="articule.yuanes" type="number" label="Yuanes 	¥" :style="sizesinp"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
@@ -84,9 +88,9 @@ const $q = useQuasar()
 
 const articule = ref({
   picture: null,
+  provider: null,
   code: '',
   description: '',
-  provider: null,
   yuanes: 0,
   pxc: 0,
   qubic: 0,
@@ -99,10 +103,10 @@ const articule = ref({
 
 const articulos = ref([]);
 const provfil = ref([]);
-const expenses = ref([]);
 
 
 const uploaderRef = ref(null);
+const uploaderRefprov = ref(null);
 
 const formvalid = computed(() => articule.value.code.length > 0 && articule.value.description.length > 0)
 
@@ -145,21 +149,14 @@ const costchin = computed(() => {
   }
 })
 
-const validart = computed(() => {
-  let igual = articulos.value.filter((e) => {
-    return (e.code + e.provider).toUpperCase() === (articule.value.code + articule.value.provider).toUpperCase()
-  })
-  return igual.length >= 1
-})
 
-const providrs = computed(() => {
-  return articulos.value.map(e => e.provider).filter((value, index, self) => {
-    return self.indexOf(value) === index
-  });
-})
 
 const insertimage = () => {
   articule.value.picture = '';
+}
+
+const insertprovider = (files) => {
+  articule.value.provider = files[0].name;
 }
 
 const getUrl = (files) => {
@@ -172,6 +169,8 @@ const getUrl = (files) => {
   console.log(formData);
 
   axios.post('http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile', formData)
+    // axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
+
     .then(response => {
       console.log('Archivos subidos exitosamente:', response.data);
       uploaderRef.value.reset();
@@ -181,10 +180,41 @@ const getUrl = (files) => {
     });
 
   return 'http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile';
+  // return 'http://192.168.10.112:1920/appchin/public/api/addFile';
+
+}
+
+const getUrlprov = (files) => {
+  console.log(files)
+  const formData = new FormData();
+  formData.append('files', files[0]);
+
+  formData.append('__key', articule.value.provider);
+
+  console.log(formData);
+  axios.post('http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile', formData)
+    // axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
+
+    .then(response => {
+      console.log('Archivos subidos exitosamente:', response.data);
+      uploaderRefprov.value.reset();
+    })
+    .catch(error => {
+      console.error('Error al subir archivos:', error);
+    });
+
+
+  return 'http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api/addFile';
+  // return 'http://192.168.10.112:1920/appchin/public/api/addFile';
+
 }
 
 const uploadFile = () => {
   uploaderRef.value.upload();
+}
+
+const uploadFileprov = () => {
+  uploaderRefprov.value.upload();
 }
 
 const init = async () => {
@@ -212,7 +242,7 @@ const envform = async () => {
     code: articule.value.code,
     picture: articule.value.picture != null ? '/' + articule.value.code + '.jpg' : null,
     description: articule.value.description,
-    provider: articule.value.provider.toUpperCase(),
+    provider: articule.value.provider != null ? '/' + articule.value.provider : null,
     chinesse_cost: costchin.value,
     taxes: articule.value.taxes,
     freight: articule.value.freight,
@@ -225,6 +255,7 @@ const envform = async () => {
     .then(r => {
       console.log(r.data);
       uploadFile();
+      uploadFileprov();
       articule.value.code = '';
       articule.value.description = '';
       articule.value.provider = null;
