@@ -16,8 +16,8 @@
         <q-tr :props="props" @click="mosrow(props.row)">
           <q-td key="Imagen" :props="props">
             <q-img v-if="props.row.picture != null"
-              :src="`http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/storage/app${props.row.picture}`" :ratio="1"
-              spinner-color="primary" spinner-size="50px" style="width: 100px" />
+              :src="`https://apichin.grupovizcarra.net/storage/${props.row.picture}`" :ratio="1" spinner-color="primary"
+              spinner-size="50px" style="width: 100px" />
             <q-avatar v-else rounded size="100px" font-size="52px" color="teal" text-color="white" icon="inventory_2" />
           </q-td>
           <q-td key="Codigo" :props="props">
@@ -32,8 +32,8 @@
           <q-td key="Provider" :props="props">
             <!-- <div class="text-pre-wrap">{{ props.row.provider }}</div> -->
             <q-img v-if="props.row.provider != null"
-              :src="`http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/storage/app${props.row.provider}`"
-              :ratio="1" spinner-color="primary" spinner-size="50px" style="width: 100px" />
+              :src="`https://apichin.grupovizcarra.net/storage/${props.row.provider}`" :ratio="1" spinner-color="primary"
+              spinner-size="50px" style="width: 100px" />
             <q-avatar v-else rounded size="100px" font-size="52px" color="teal" text-color="white" icon="inventory_2" />
           </q-td>
           <q-td key="Costchin" :props="props">
@@ -50,9 +50,8 @@
       <q-card class="my-card">
         <q-card-section>
           <div class="flex justify-center">
-            <q-img v-if="mos.body.picture != null"
-              :src="`http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/storage/app${mos.body.picture}`" :ratio="1"
-              spinner-color="primary" spinner-size="50px" style="width: 200px" />
+            <q-img v-if="mos.body.picture != null" :src="`https://apichin.grupovizcarra.net/storage/${mos.body.picture}`"
+              :ratio="1" spinner-color="primary" spinner-size="50px" style="width: 200px" />
             <q-avatar v-else rounded size="100px" font-size="80px" color="teal" text-color="white" icon="inventory_2" />
           </div>
         </q-card-section>
