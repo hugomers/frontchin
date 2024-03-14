@@ -199,7 +199,7 @@ const getUrlprov = (files) => {
   const formData = new FormData();
   formData.append('files', files[0]);
 
-  formData.append('__key', articule.value.provider);
+  formData.append('__key', articule.value.code + '_' + articule.value.provider);
 
   console.log(formData);
   axios.post('https://apichin.grupovizcarra.net/api/addFile', formData)
@@ -265,7 +265,7 @@ const envform = async () => {
     code: articule.value.code,
     picture: articule.value.picture != null ? '/' + articule.value.code + '.jpg' : null,
     description: articule.value.description,
-    provider: articule.value.provider != null ? '/' + articule.value.provider : null,
+    provider: articule.value.provider != null ? '/' + articule.value.code + '_' + articule.value.provider : null,
     chinesse_cost: costchin.value,
     taxes: articule.value.taxes,
     freight: articule.value.freight,
