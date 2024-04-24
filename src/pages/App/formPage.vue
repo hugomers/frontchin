@@ -1,6 +1,25 @@
 <template>
   <q-page padding>
     <q-form class="q-gutter-md">
+      <q-card class="my-card row">
+        <q-card-section class="col">
+          <div class="text-grey-7 text-center text-overline">COSTO CHINO MXM</div>
+          <div class="text-center text-bold text-italic"> $ {{ costchin }}</div>
+        </q-card-section>
+        <q-separator vertical />
+        <q-card-section class="col">
+          <div class="text-grey-7 text-center text-overline">COSTO MEXICANO</div>
+          <div class="text-center text-bold text-italic"> $ {{ costmex }}</div>
+        </q-card-section>
+        <q-separator vertical />
+        <q-card-section class="col">
+          <div class="text-grey-7 text-center text-overline ">IMPUESTO</div>
+          <div class="text-center text-bold text-italic"> $ {{ (costmex - costchin).toFixed(2) }}</div>
+        </q-card-section>
+      </q-card>
+
+
+
       <div class="row">
         <div class="col flex justify-center">
           <q-uploader :hide-upload-btn="true" ref="uploaderRef" :url="getUrl" color="primary" :style="sizes"
@@ -26,11 +45,11 @@
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Costo Chino : $ {{
                 costchin }}</div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Costo Mexicano : $ {{ costmex
-              }}
+                }}
               </div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Gato X articulo: $ {{ costmex
                 - costchin
-              }}
+                }}
               </div>
 
             </q-card-section>
@@ -41,9 +60,12 @@
 
       <div class="flex justify-center">
         <q-input filled v-model="articule.code" type="text" label="Codigo" :style="sizesinp"
-          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
+          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" mask="XXXXXXXXXXXX" />
 
         <q-input filled v-model="articule.description" type="text" label="Descripcion" :style="sizesinp"
+          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
+
+        <q-input filled v-model="articule.notes" type="text" label="Notas" :style="sizesinp"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
 
         <!-- <q-select filled v-model="articule.provider" use-input use-chips miltiple input-debounce="0"
@@ -65,20 +87,17 @@
         <q-input filled v-model="articule.tpcrmb" type="number" label="Tipo Cambio RMB" :style="sizesinp"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
 
-        <q-input filled v-model="costmex" type="number" label="Costo Mexicano $" :style="sizesinp"
-          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" :disable="true" />
 
-        <q-input filled v-model="costchin" type="number" label="Costo Chino MXM" :style="sizesinp"
-          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" :disable="true" />
 
         <q-btn :style="sizesinp" color="primary" icon="list" label="Enviar Formulario" @click="envform"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" :disable="!formvalid" />
+
       </div>
     </q-form>
   </q-page>
 </template>
 
-<script setup >
+<script setup>
 import axios from 'axios'
 import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar'
@@ -99,6 +118,7 @@ const articule = ref({
   tpcusd: 0,
   tpcrmb: 0,
   mcont: 68,
+  notes: '',
 })
 
 const articulos = ref([]);
@@ -134,7 +154,7 @@ const sizesinp = computed(() => {
 const costmex = computed(() => {
   if (articule.value.yuanes > 0 && articule.value.pxc > 0 && articule.value.taxes > 0 && articule.value.qubic > 0 && articule.value.freight > 0 && articule.value.tpcusd > 0 && articule.value.tpcrmb > 0) {
     let costo = (parseFloat(articule.value.taxes) + parseFloat(articule.value.freight)) / (articule.value.mcont / articule.value.qubic * articule.value.pxc) + (articule.value.yuanes * (articule.value.tpcusd / articule.value.tpcrmb))
-    return costo.toFixed(6)
+    return costo.toFixed(2)
   } else {
     return 0
   }
@@ -143,7 +163,7 @@ const costmex = computed(() => {
 const costchin = computed(() => {
   if (articule.value.yuanes > 0 && articule.value.pxc > 0 && articule.value.taxes > 0 && articule.value.qubic > 0 && articule.value.freight > 0 && articule.value.tpcusd > 0 && articule.value.tpcrmb > 0) {
     let costo = (articule.value.yuanes * (articule.value.tpcusd / articule.value.tpcrmb))
-    return costo.toFixed(6)
+    return costo.toFixed(2)
   } else {
     return 0
   }
@@ -151,8 +171,10 @@ const costchin = computed(() => {
 
 
 
-const insertimage = () => {
-  articule.value.picture = '';
+const insertimage = (a) => {
+  let string = a[0].type.split('/')
+  console.log(string[1])
+  articule.value.picture = string[1];
 }
 
 const insertprovider = (files) => {
@@ -164,7 +186,7 @@ const getUrl = (files) => {
   const formData = new FormData();
   formData.append('files', files[0]);
 
-  formData.append('__key', articule.value.code + '.jpg');
+  formData.append('__key', articule.value.code + `.${articule.value.picture}`);
 
   console.log(formData);
 
@@ -263,15 +285,17 @@ const envform = async () => {
   $q.loading.show({ message: "Subiendo Info" })
   let data = {
     code: articule.value.code,
-    picture: articule.value.picture != null ? '/' + articule.value.code + '.jpg' : null,
+    picture: articule.value.picture != null ? '/' + articule.value.code + `.${articule.value.picture}` : '/vacio.jpg',
     description: articule.value.description,
-    provider: articule.value.provider != null ? '/' + articule.value.code + '_' + articule.value.provider : null,
+    provider: articule.value.provider != null ? '/' + articule.value.code + '_' + articule.value.provider : '/vacio.jpg',
     chinesse_cost: costchin.value,
     taxes: articule.value.taxes,
     freight: articule.value.freight,
     measures: articule.value.qubic,
     mexican_cost: costmex.value,
-    pieces: articule.value.pxc
+    pieces: articule.value.pxc,
+    _download: 0,
+    notes: articule.value.notes
   }
   console.log(data)
   api.post('/insProduct', data)
