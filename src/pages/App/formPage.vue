@@ -190,7 +190,7 @@ const getUrl = (files) => {
 
   console.log(formData);
 
-  axios.post('https://apichin.grupovizcarra.net/api/addFile', formData)
+  axios.post('https://apimport.grupovizcarra.mx/api/addFile', formData)
     // axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
 
     .then(response => {
@@ -211,7 +211,7 @@ const getUrl = (files) => {
       })
     });
 
-  return 'https://apichin.grupovizcarra.net/api/addFile';
+  return 'https://apimport.grupovizcarra.mx/api/addFile';
   // return 'http://192.168.10.112:1920/appchin/public/api/addFile';
 
 }
@@ -224,7 +224,7 @@ const getUrlprov = (files) => {
   formData.append('__key', articule.value.code + '_' + articule.value.provider);
 
   console.log(formData);
-  axios.post('https://apichin.grupovizcarra.net/api/addFile', formData)
+  axios.post('https://apimport.grupovizcarra.mx/api/addFile', formData)
     // axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
 
     .then(response => {
@@ -246,7 +246,7 @@ const getUrlprov = (files) => {
     });
 
 
-  return 'https://apichin.grupovizcarra.net/api/addFile';
+  return 'https://apimport.grupovizcarra.mx/api/addFile';
   // return 'http://192.168.10.112:1920/appchin/public/api/addFile';
 
 }
