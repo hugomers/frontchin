@@ -17,7 +17,7 @@
         <q-tr :props="props" @click="mosrow(props.row)">
           <q-td key="Imagen" :props="props">
             <q-img v-if="props.row.picture != null"
-              :src="`https://apichin.grupovizcarra.net/storage/${props.row.picture}`" :ratio="1" spinner-color="primary"
+              :src="`https://apimport.grupovizcarra.mx/storage/${props.row.picture}`" :ratio="1" spinner-color="primary"
               spinner-size="50px" style="width: 100px" />
             <q-avatar v-else rounded size="100px" font-size="52px" color="teal" text-color="white" icon="inventory_2" />
           </q-td>
@@ -33,7 +33,7 @@
           <q-td key="Provider" :props="props">
             <!-- <div class="text-pre-wrap">{{ props.row.provider }}</div> -->
             <q-img v-if="props.row.provider != null"
-              :src="`https://apichin.grupovizcarra.net/storage/${props.row.provider}`" :ratio="1"
+              :src="`https://apimport.grupovizcarra.mx/storage/${props.row.provider}`" :ratio="1"
               spinner-color="primary" spinner-size="50px" style="width: 100px" />
             <q-avatar v-else rounded size="100px" font-size="52px" color="teal" text-color="white" icon="inventory_2" />
           </q-td>
@@ -58,7 +58,7 @@
         <q-card-section>
           <div class="flex justify-center">
             <q-img v-if="mos.body.picture != null"
-              :src="`https://apichin.grupovizcarra.net/storage/${mos.body.picture}`" :ratio="1" spinner-color="primary"
+              :src="`https://apimport.grupovizcarra.mx/storage/${mos.body.picture}`" :ratio="1" spinner-color="primary"
               spinner-size="50px" style="width: 200px" />
             <q-avatar v-else rounded size="100px" font-size="80px" color="teal" text-color="white" icon="inventory_2" />
           </div>
