@@ -1,10 +1,12 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
-// const api = axios.create({ baseURL: 'http://mx100-cedis-mkrqpwcczk.dynamic-m.com:5150/appchin/public/api' })
-const api = axios.create({ baseURL: 'https://apimport.grupovizcarra.mx/api' })
-// const api = axios.create({ baseURL: 'https://apvizapi.grupovizcarra.net/api' })
 
-// const api = axios.create({ baseURL: 'http://192.168.10.112:1920/appchin/public/api' })
+const url = 'https://apimport.grupovizcarra.mx/';
+// const url = 'http://192.168.10.160:1920/appchin/public/';
+
+const api = axios.create({ baseURL: `${url}api`})
+
+const media = `${url}storage`
 
 
 export default boot(({ app }) => {
@@ -12,4 +14,4 @@ export default boot(({ app }) => {
   app.config.globalProperties.$api = api
 })
 
-export { api }
+export { api,media }

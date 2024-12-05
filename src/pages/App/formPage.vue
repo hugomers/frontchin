@@ -16,19 +16,21 @@
           <div class="text-grey-7 text-center text-overline ">IMPUESTO</div>
           <div class="text-center text-bold text-italic"> $ {{ (costmex - costchin).toFixed(2) }}</div>
         </q-card-section>
+
       </q-card>
 
 
 
-      <div class="row">
+      <div :class="ismobile ? '' : 'row'">
         <div class="col flex justify-center">
-          <q-uploader :hide-upload-btn="true" ref="uploaderRef" :url="getUrl" color="primary" :style="sizes"
-            label="Imagen Articulo" @added="insertimage">
+          <q-uploader hide-upload-btn label="Imagen Articulo" accept=".jpg, image/*" @added="insertimageProd" multiple
+            :style="sizes" @removed="removeImageProd" ref="artfil">
           </q-uploader>
         </div>
+        <q-separator spaced inset vertical dark />
         <div class="col flex justify-center">
-          <q-uploader :hide-upload-btn="true" ref="uploaderRefprov" :url="getUrlprov" color="primary" :style="sizes"
-            label="Imagen Proveedor" @added="insertprovider">
+          <q-uploader :hide-upload-btn="true" :style="sizes" accept=".jpg, image/*" label="Imagen Proveedor"
+            @added="insertimageProv" @removed="insertimageProv" multiple ref="providerfile">
           </q-uploader>
         </div>
 
@@ -40,8 +42,8 @@
                 articule.code.toUpperCase() }}</div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Descripcion : {{
                 articule.description.toUpperCase() }}</div>
-              <!-- <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Proveedor : {{
-                articule.provider }}</div> -->
+              <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Proveedor : {{
+                articule.provider }}</div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Costo Chino : $ {{
                 costchin }}</div>
               <div :class="ismobile ? 'text-subtitle1 q-mt-xs' : 'text-subtitle1 q-mt-md'">Costo Mexicano : $ {{ costmex
@@ -68,9 +70,9 @@
         <q-input filled v-model="articule.notes" type="text" label="Notas" :style="sizesinp"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
 
-        <!-- <q-select filled v-model="articule.provider" use-input use-chips miltiple input-debounce="0"
-          @new-value="createValue" :options="provfil" @filter="filterFn" :style="sizesinp"
-          :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" label="Proveedor/Fabricante" /> -->
+        <q-select filled v-model="articule.provider" use-input input-debounce="0" @new-value="createValue"
+          :options="provfil" @filter="filterFn" :style="sizesinp" :class="ismobile ? 'q-mt-xs' : 'q-mt-md'"
+          label="Proveedor/Fabricante" />
 
         <q-input filled v-model="articule.yuanes" type="number" label="Yuanes 	¥" :style="sizesinp"
           :class="ismobile ? 'q-mt-xs' : 'q-mt-md'" />
@@ -102,12 +104,12 @@ import axios from 'axios'
 import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
+import { media } from 'src/boot/axios'
+
 
 const $q = useQuasar()
 
 const articule = ref({
-  picture: null,
-  provider: null,
   code: '',
   description: '',
   yuanes: 0,
@@ -119,14 +121,15 @@ const articule = ref({
   tpcrmb: 0,
   mcont: 68,
   notes: '',
+  img_provider: [],
+  img_product: []
 })
 
 const articulos = ref([]);
 const provfil = ref([]);
-
-
-const uploaderRef = ref(null);
-const uploaderRefprov = ref(null);
+const providerfile = ref(null)
+const artfil = ref(null)
+const hoveredItem = ref(null)
 
 const formvalid = computed(() => articule.value.code.length > 0 && articule.value.description.length > 0)
 
@@ -168,96 +171,13 @@ const costchin = computed(() => {
     return 0
   }
 })
+const providrs = computed(() => {
+  return articulos.value.map(e => e.maker).filter((value, index, self) => {
+    return self.indexOf(value) === index
+  });
+})
 
 
-
-const insertimage = (a) => {
-  let string = a[0].type.split('/')
-  console.log(string[1])
-  articule.value.picture = string[1];
-}
-
-const insertprovider = (files) => {
-  articule.value.provider = files[0].name;
-}
-
-const getUrl = (files) => {
-  console.log(files)
-  const formData = new FormData();
-  formData.append('files', files[0]);
-
-  formData.append('__key', articule.value.code + `.${articule.value.picture}`);
-
-  console.log(formData);
-
-  axios.post('https://apimport.grupovizcarra.mx/api/addFile', formData)
-    // axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
-
-    .then(response => {
-      console.log('Archivos subidos exitosamente:', response.data);
-      uploaderRef.value.reset();
-      $q.notify({
-        type: 'positive',
-        message: 'Imagen Producto se subio con exito :' + response.data,
-        position: 'center'
-      })
-    })
-    .catch(error => {
-      console.error('Error al subir archivos:', error);
-      $q.notify({
-        type: 'negative',
-        message: '(I)Error al subir archivo:' + response.data,
-        position: 'center'
-      })
-    });
-
-  return 'https://apimport.grupovizcarra.mx/api/addFile';
-  // return 'http://192.168.10.112:1920/appchin/public/api/addFile';
-
-}
-
-const getUrlprov = (files) => {
-  console.log(files)
-  const formData = new FormData();
-  formData.append('files', files[0]);
-
-  formData.append('__key', articule.value.code + '_' + articule.value.provider);
-
-  console.log(formData);
-  axios.post('https://apimport.grupovizcarra.mx/api/addFile', formData)
-    // axios.post('http://192.168.10.112:1920/appchin/public/api/addFile', formData)
-
-    .then(response => {
-      console.log('Archivos subidos exitosamente:', response.data);
-      uploaderRefprov.value.reset();
-      $q.notify({
-        type: 'positive',
-        message: 'Imagen Proveedor se subio con exito :' + response.data,
-        position: 'center'
-      })
-    })
-    .catch(error => {
-      console.error('Error al subir archivos:', error);
-      $q.notify({
-        type: 'negative',
-        message: '(P)Error al subir archivo:' + response.data,
-        position: 'center'
-      })
-    });
-
-
-  return 'https://apimport.grupovizcarra.mx/api/addFile';
-  // return 'http://192.168.10.112:1920/appchin/public/api/addFile';
-
-}
-
-const uploadFile = () => {
-  uploaderRef.value.upload();
-}
-
-const uploadFileprov = () => {
-  uploaderRefprov.value.upload();
-}
 
 const init = async () => {
   $q.loading.show({
@@ -282,39 +202,60 @@ const init = async () => {
 }
 
 const envform = async () => {
+
+
   $q.loading.show({ message: "Subiendo Info" })
-  let data = {
-    code: articule.value.code,
-    picture: articule.value.picture != null ? '/' + articule.value.code + `.${articule.value.picture}` : '/vacio.jpg',
-    description: articule.value.description,
-    provider: articule.value.provider != null ? '/' + articule.value.code + '_' + articule.value.provider : '/vacio.jpg',
-    chinesse_cost: costchin.value,
-    taxes: articule.value.taxes,
-    freight: articule.value.freight,
-    measures: articule.value.qubic,
-    mexican_cost: costmex.value,
-    pieces: articule.value.pxc,
-    _download: 0,
-    notes: articule.value.notes
-  }
-  console.log(data)
-  api.post('/insProduct', data)
+
+  const formData = new FormData();
+  formData.append('code', articule.value.code)
+  // formData.append('picture', articule.value.img_product)
+  articule.value.img_product.forEach((file, index) => {
+    formData.append(`picture[${index}]`, file);
+  });
+  formData.append('description', articule.value.description)
+  // formData.append('provider', articule.value.img_provider)
+  articule.value.img_provider.forEach((file, index) => {
+    formData.append(`provider[${index}]`, file);
+  });
+  formData.append('chinesse_cost', costchin.value)
+  formData.append('taxes', articule.value.taxes)
+  formData.append('freight', articule.value.freight)
+  formData.append('measures', articule.value.qubic)
+  formData.append('mexican_cost', costmex.value)
+  formData.append('pieces', articule.value.pxc)
+  formData.append('_download', 0)
+  formData.append('notes', articule.value.notes)
+  formData.append('maker', articule.value.provider)
+  console.log(formData)
+  api.post('/insProduct', formData)
     .then(r => {
       console.log(r.data);
-      uploadFile();
-      uploadFileprov();
-      articule.value.code = '';
-      articule.value.description = '';
-      articule.value.provider = null;
-      articule.value.yuanes = 0;
-      articule.value.pxc = 0;
-      articule.value.qubic = 0;
+      init()
       $q.loading.hide();
       $q.notify({
         type: 'positive',
         message: 'Formulario Enviado',
         position: 'center'
       })
+
+      articule.value = {
+        code: '',
+        description: '',
+        yuanes: 0,
+        pxc: 0,
+        qubic: 0,
+        taxes: 0,
+        freight: 0,
+        tpcusd: 0,
+        tpcrmb: 0,
+        mcont: 68,
+        notes: '',
+        img_provider: [],
+        img_product: []
+      }
+      artfil.value.reset();
+      providerfile.value.reset()
+
 
     })
     .catch(r => {
@@ -351,6 +292,28 @@ const filterFn = (val, update) => {
   })
 }
 
+const removeImageProd = (files) => {
+  console.log(files);
+  articule.value.img_product = articule.value.img_product.filter(
+    (file) => !files.some((removed) => removed.name === file.name)
+  );
+}
+const removeImageProv = (files) => {
+  console.log(files);
+  articule.value.img_product = articule.value.img_product.filter(
+    (file) => !files.some((removed) => removed.name === file.name)
+  );
+}
+
+const insertimageProd = (files) => {
+  // articule.value.img_product.push(files)
+  articule.value.img_product = [...articule.value.img_product, ...files];
+}
+
+const insertimageProv = (files) => {
+  // articule.value.img_provider = files
+  articule.value.img_provider = [...articule.value.img_provider, ...files];
+}
 
 
 init()
