@@ -315,10 +315,26 @@ const exportTable = async () => {
     }
   };
   downloadExcel();
+  updateProducts();
   $q.loading.hide()
 }
+
+const updateProducts = async () => {
+  try {
+    const resp = await api.post('/updateProduct', { products: basket.value });
+    articulos.value = resp.data.products
+    console.log(resp)
+  } catch (error) {
+    // Verifica si el error tiene una respuesta del servidor
+    if (error.response) {
+      console.error('Error del servidor:', error.response.status); // Código de estado
+      console.error('Detalles del error:', error.response.data);   // Mensaje del error
+    } else if (error.request) {
+      console.error('No se recibió respuesta del servidor:', error.request);
+    } else {
+      console.error('Error al configurar la solicitud:', error.message);
+    }
+  }
+}
 init()
-
-
-
 </script>
